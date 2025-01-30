@@ -78,74 +78,60 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Comparator;
 
+/*
+ * Create the Student and Priorities classes here.
+ */
+class Student1 {
+    int id;
+    String name;
+    double cgpa;
+
+    Student1(int id, String name, double cgpa) {
+        this.id = id;
+        this.name = name;
+        this.cgpa = cgpa;
+    }
+
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public double getCgpa() { return cgpa; }
+}
+
+class Priorities {
+    private List<Student1> pq = new ArrayList<Student1>();
+
+    private void addStudent(Student1 newStudent) {
+        pq.add(newStudent);
+        pq.sort(Comparator.comparingDouble(Student1::getCgpa).reversed()
+                .thenComparing(s -> s.getName())
+                .thenComparingInt(Student1::getId)
+        );
+    }
+
+    List<Student1> getStudents(List<String> events) {
+        for(String event : events) {
+            if(event.startsWith("SERVED") && pq.size() > 0) {
+                pq.remove(0);
+            } else if(event.startsWith("ENTER")) {
+                String[] eventTokens = event.split(" ");
+                int id = Integer.parseInt(eventTokens[3]);
+                String name = eventTokens[1];
+                double cgpa = Double.parseDouble(eventTokens[2]);
+                Student1 newStudent = new Student1(id, name, cgpa);
+                addStudent(newStudent);
+            }
+        }
+
+        return pq;
+    }
+}
+
 
 public class BR_PriorityQueue {
-    static class Student {
-        int id;
-        String name;
-        double cgpa;
-
-        Student(int id, String name, double cgpa) {
-            this.id = id;
-            this.name = name;
-            this.cgpa = cgpa;
-        }
-
-        public int getId() { return id; }
-        public String getName() { return name; }
-        public double getCgpa() { return cgpa; }
-    }
-
-    static class Priorities {
-        private List<Student> pq = new ArrayList<Student>();
-
-        private void addStudent(Student newStudent) {
-            pq.add(newStudent);
-        }
-
-        private Student getStudent() {
-            List<Student> candidates = new ArrayList<Student>();
-            double cgpaMax = 0;
-            for(Student iEstuStudent : pq) {
-                if(iEstuStudent.getCgpa() > cgpaMax) {
-                    candidates.clear();
-                    candidates.add(iEstuStudent);
-                    cgpaMax = iEstuStudent.getCgpa();
-                } else if(iEstuStudent.getCgpa() == cgpaMax) {
-                    candidates.add(iEstuStudent);
-                }
-            }
-            candidates.sort(Comparator.comparing(Student::getName)
-                    .thenComparing(Comparator.comparing(Student::getId))
-            );
-            Student servedStudent = candidates.get(0);
-            pq.remove(servedStudent);
-            return servedStudent;
-        }
-
-        List<Student> getStudents(List<String> events) {
-            List<Student> resultList = new ArrayList<Student>();
-            for(String event : events) {
-                if(event.startsWith("SERVED")) {
-                    Student student = getStudent();
-                    resultList.add(student);
-                } else if(event.startsWith("ENTER")) {
-                    String[] eventTokens = event.split(" ");
-                    int id = Integer.parseInt(eventTokens[3]);
-                    String name = eventTokens[1];
-                    double cgpa = Double.parseDouble(eventTokens[2]);
-                    Student newStudent = new Student(id, name, cgpa);
-                    addStudent(newStudent);
-                }
-            }
-            return resultList;
-        }
-    }
-
     private final static Scanner scan = new Scanner(System.in);
+    private final static Priorities priorities = new Priorities();
 
     public static void main(String[] args) {
-        final Priorities priorities = new Priorities();
         int totalEvents = Integer.parseInt(scan.nextLine());
         List<String> events = new ArrayList<>();
 
@@ -154,12 +140,12 @@ public class BR_PriorityQueue {
             events.add(event);
         }
 
-        List<Student> students = priorities.getStudents(events);
+        List<Student1> students = priorities.getStudents(events);
 
         if (students.isEmpty()) {
             System.out.println("EMPTY");
         } else {
-            for (Student st: students) {
+            for (Student1 st: students) {
                 System.out.println(st.getName());
             }
         }
