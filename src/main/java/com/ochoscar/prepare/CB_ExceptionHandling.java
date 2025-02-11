@@ -39,7 +39,7 @@ In the last two cases, at least one out of  and  is negative. So, the exception,
  */
 
 import java.util.Scanner;
-class MyCalculator {
+class MyCalculator2 {
     /*
      * Create the method long power(int, int) here.
      */
@@ -51,7 +51,7 @@ class MyCalculator {
 }
 
 public class CB_ExceptionHandling {
-    public static final MyCalculator my_calculator = new MyCalculator();
+    public static final MyCalculator2 my_calculator = new MyCalculator2();
     public static final Scanner in = new Scanner(System.in);
 
     public static void main(String[] args) {
